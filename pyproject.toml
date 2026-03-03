@@ -1,3 +1,35 @@
+[project]
+name = "reportgen"
+version = "0.1.0"
+description = "CSV to PDF report generator"
+authors = [{ name = "Sebastian Schwiebert" }]
+requires-python = ">=3.12"
+dependencies = [
+    "jinja2",
+    "weasyprint"
+]
+
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["cli", "csv", "pdf", "jinja2", "weasyprint", "reporting"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: Console",
+  "Topic :: Office/Business",
+  "Topic :: Software Development :: Build Tools",
+]
+
+[project.urls]
+Homepage = "https://github.com/natalnetwork/csv-pdf-reportgen"
+Repository = "https://github.com/natalnetwork/csv-pdf-reportgen"
+Issues = "https://github.com/natalnetwork/csv-pdf-reportgen/issues"
+
+[project.scripts]
+reportgen = "reportgen.cli:main"
+
 [tool.ruff]
 line-length = 88
 target-version = "py312"
