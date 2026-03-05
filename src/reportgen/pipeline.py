@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Pipeline orchestrator: load CSV, render template, generate PDF."""
+
+from __future__ import annotations
 
 from pathlib import Path
 
