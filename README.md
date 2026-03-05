@@ -15,7 +15,7 @@ automation, reporting systems and backend services.
 
 # Example
 
-    reportgen examples/minimal.csv --template templates/minimal/template.html --out out
+    reportgen examples/minimal.csv --out out
 
 Output:
 
@@ -65,9 +65,13 @@ pip install -e .
 Run the CLI tool:
 
 ``` bash
-reportgen examples/minimal.csv \
-  --template templates/minimal/template.html \
-  --out out
+reportgen examples/minimal.csv --out out
+```
+
+If your CSV has a header row, pass:
+
+``` bash
+reportgen examples/minimal.csv --out out --header yes
 ```
 
 Generated output:

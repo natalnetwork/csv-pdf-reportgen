@@ -1,18 +1,12 @@
 from __future__ import annotations
 
-import csv
 from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
 
-
-def load_csv_records(csv_path: Path) -> list[dict[str, Any]]:
-    """Load CSV file into a list of dict records."""
-    with csv_path.open(newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        return list(reader)
+from .csv_loader import load_csv
 
 
 def render_html(template_path: Path, context: dict[str, Any]) -> str:
@@ -31,17 +25,24 @@ def generate_pdf(html: str, output_path: Path) -> Path:
     return output_path
 
 
-def run(input_path: str | Path, template_path: str | Path, out_dir: str | Path) -> Path:
-    """Run the minimal pipeline: CSV -> Jinja2 HTML -> WeasyPrint PDF."""
+def run(
+    input_path: str | Path,
+    template_path: str | Path,
+    out_dir: str | Path,
+    header: bool = False,
+) -> Path:
+    """Run the pipeline: CSV -> Jinja2 HTML -> WeasyPrint PDF."""
     csv_path = Path(input_path)
     template_file = Path(template_path)
     output_dir = Path(out_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    records = load_csv_records(csv_path)
+    columns, rows = load_csv(csv_path, header=header)
     context = {
-        "records": records,
-        "meta": {"source": csv_path.name, "count": len(records)},
+        "columns": columns,
+        "rows": rows,
+        "records": rows,
+        "meta": {"source": csv_path.name, "count": len(rows)},
     }
     html = render_html(template_file, context)
 

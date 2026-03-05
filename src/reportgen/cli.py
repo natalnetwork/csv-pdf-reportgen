@@ -6,14 +6,28 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from reportgen import pipeline
+from reportgen.validator import ValidationError
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="reportgen")
-    parser.add_argument("input_csv", help="Input CSV file")
-    parser.add_argument("--template", required=True, help="HTML template file")
-    parser.add_argument("--out", required=True, help="Output directory")
+    parser = argparse.ArgumentParser(
+        prog="reportgen",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  reportgen data.csv --out out\n"
+            "  reportgen data.csv --out out --header yes"
+        ),
+    )
+    parser.add_argument("input_csv", nargs="?", help="Input CSV file")
+    parser.add_argument("--template", help="HTML template file")
+    parser.add_argument("--out", help="Output directory")
+    parser.add_argument(
+        "--header",
+        choices=("yes", "no"),
+        default="no",
+        help="Header handling: yes (first row), no (generate)",
+    )
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--verbose", action="store_true", help="Enable INFO logging")
@@ -35,10 +49,33 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
+    if args.input_csv is None:
+        parser.print_help()
+        return 0
+
+    missing_flags: list[str] = []
+    if not args.out:
+        missing_flags.append("--out")
+    if missing_flags:
+        missing_str = ", ".join(missing_flags)
+        print(
+            f"Error: missing required option(s) for input CSV: {missing_str}",
+            file=sys.stderr,
+        )
+        return 2
+
     _configure_logging(args.verbose, args.quiet)
 
     input_path = Path(args.input_csv)
-    template_path = Path(args.template)
+    if args.template:
+        template_path = Path(args.template)
+    else:
+        template_path = (
+            Path(__file__).resolve().parents[2]
+            / "templates"
+            / "table"
+            / "template.html"
+        )
     out_dir = Path(args.out)
 
     if not input_path.is_file():
@@ -57,7 +94,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return 2
 
-    output_path = pipeline.run(input_path, template_path, out_dir)
+    try:
+        from reportgen import pipeline
+
+        output_path = pipeline.run(
+            input_path,
+            template_path,
+            out_dir,
+            header=args.header == "yes",
+        )
+    except ValidationError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 2
     print(output_path)
     return 0
 
