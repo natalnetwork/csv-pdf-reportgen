@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-"""CSV loading with deterministic header handling and structural validation."""
-
 import csv
 from pathlib import Path
 from typing import cast
 
 from .validator import ValidationError
+
+"""CSV loading with deterministic header handling and structural validation."""
 
 
 def _sniff_dialect(sample: str) -> csv.Dialect:

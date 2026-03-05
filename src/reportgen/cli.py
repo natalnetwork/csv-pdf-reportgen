@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-"""CLI entrypoint for reportgen."""
-
 import argparse
 import logging
 import sys
@@ -9,6 +7,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from reportgen.validator import ValidationError
+
+"""CLI entrypoint for reportgen."""
 
 
 def _build_parser() -> argparse.ArgumentParser:
