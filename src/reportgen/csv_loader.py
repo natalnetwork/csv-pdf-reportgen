@@ -52,5 +52,5 @@ def load_csv(path: str | Path, header: bool) -> tuple[list[str], list[dict[str, 
                 f"CSV validation failed: inconsistent column count in row {row_num}"
             )
 
-    rows = [dict(zip(columns, row)) for row in data_rows]
+    rows = [dict(zip(columns, row, strict=False)) for row in data_rows]
     return columns, rows
