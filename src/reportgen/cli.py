@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""CLI entrypoint for reportgen."""
+
 import argparse
 import logging
 import sys
@@ -32,6 +34,7 @@ def _build_parser() -> argparse.ArgumentParser:
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--verbose", action="store_true", help="Enable INFO logging")
     group.add_argument("--quiet", action="store_true", help="Enable ERROR logging")
+    # TODO: add --list-templates option.
     return parser
 
 
@@ -107,6 +110,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
     print(output_path)
+    # TODO: print short summary (files generated, warnings count).
     return 0
 
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Validation error types for reportgen."""
+
 from dataclasses import dataclass
 
 

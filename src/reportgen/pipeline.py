@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Pipeline orchestrator: load CSV, render template, generate PDF."""
+
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +34,8 @@ def run(
     header: bool = False,
 ) -> Path:
     """Run the pipeline: CSV -> Jinja2 HTML -> WeasyPrint PDF."""
+    # TODO: add optional transform stage before rendering.
+    # TODO: return warnings for CLI summary.
     csv_path = Path(input_path)
     template_file = Path(template_path)
     output_dir = Path(out_dir)

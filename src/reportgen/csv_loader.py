@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+"""CSV loading with deterministic header handling and structural validation."""
+
 import csv
 from pathlib import Path
+from typing import cast
 
 from .validator import ValidationError
 
@@ -9,9 +12,9 @@ from .validator import ValidationError
 def _sniff_dialect(sample: str) -> csv.Dialect:
     sniffer = csv.Sniffer()
     try:
-        return sniffer.sniff(sample, delimiters=[",", ";", "\t", "|"])
+        return cast(csv.Dialect, sniffer.sniff(sample, delimiters=",;\t|"))
     except csv.Error:
-        return csv.excel
+        return cast(csv.Dialect, csv.get_dialect("excel"))
 
 
 def _generate_columns(column_count: int) -> list[str]:
@@ -19,6 +22,8 @@ def _generate_columns(column_count: int) -> list[str]:
 
 
 def load_csv(path: str | Path, header: bool) -> tuple[list[str], list[dict[str, str]]]:
+    # TODO: allow user-specified encoding via CLI.
+    # TODO: optionally normalize header keys.
     csv_path = Path(path)
     with csv_path.open(newline="", encoding="utf-8-sig") as handle:
         sample = handle.read(4096)
