@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 """Pipeline orchestrator: load CSV, render template, generate PDF."""
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
@@ -11,7 +10,7 @@ from weasyprint import HTML
 from .csv_loader import load_csv
 
 
-def render_html(template_path: Path, context: dict[str, Any]) -> str:
+def render_html(template_path: Path, context: dict[str, object]) -> str:
     """Render HTML with Jinja2 using the template file."""
     env = Environment(
         loader=FileSystemLoader(str(template_path.parent)),
