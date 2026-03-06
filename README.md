@@ -1,61 +1,68 @@
-# CSV → PDF Report Generator
+# csv-pdf-reportgen
 
-![CI](https://github.com/natalnetwork/csv-pdf-reportgen/actions/workflows/ci.yml/badge.svg)
-![Python](https://img.shields.io/badge/python-3.12-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Ruff](https://img.shields.io/badge/linter-ruff-yellow)
+A minimal, production-oriented **CSV → PDF report generator** written in
+Python.
 
-A minimal, production‑style CLI tool that converts **CSV files into PDF
-reports** using **Jinja2 templates** and **WeasyPrint**.
-
-Use it to turn ad-hoc CSV exports into shareable PDF reports with a single command.
-It is useful for quick status reports, invoices, or audit-friendly exports from
-spreadsheets and back-office systems.
-The default template is generic, but you can swap in custom templates anytime.
-
-This project demonstrates a clean **pipeline architecture** suitable for
-automation, reporting systems and backend services.
+The project demonstrates a clean backend architecture using a
+deterministic data pipeline and modern tooling (pytest, ruff, CI)
+suitable for professional software development and portfolio use.
 
 ------------------------------------------------------------------------
 
-# 1-Minute Quickstart
+# Overview
 
-``` bash
-reportgen examples/minimal.csv --out out
-```
+`csv-pdf-reportgen` converts structured CSV data into formatted PDF
+reports using HTML templates.
 
-If your CSV has a header row:
+Pipeline architecture:
 
-``` bash
-reportgen examples/minimal.csv --out out --header yes
-```
+CSV → Validate → Transform → Render (Jinja2) → HTML → PDF
 
-Output:
-
-    out/minimal.pdf
+The goal of the project is **clarity, reliability, and testability**,
+not feature overload.
 
 ------------------------------------------------------------------------
 
-# Example
+# Features (MVP v0.1)
 
-    reportgen examples/minimal.csv --out out
-
-Output:
-
-    out/minimal.pdf
+• End‑to‑end CSV → PDF pipeline\
+• Jinja2 template rendering\
+• HTML → PDF conversion\
+• Deterministic CLI interface\
+• Automated tests using **pytest**\
+• Static code quality checks with **ruff**\
+• Continuous Integration using **GitHub Actions**
 
 ------------------------------------------------------------------------
 
-# Features
+# Architecture
 
--   CSV → PDF pipeline
--   Jinja2 template rendering
--   WeasyPrint PDF generation
--   CLI interface
--   reproducible output
--   typed Python code
--   Ruff linting & formatting
--   CI with GitHub Actions
+The application follows a **pipeline pattern**:
+
+load → validate → transform → render → generate → write
+
+Design principles:
+
+• No global state\
+• Explicit error handling\
+• Deterministic behavior\
+• Typed Python code\
+• Clear module responsibilities\
+• Testability over feature count
+
+Example module layout:
+
+    reportgen/
+        __init__.py
+        __main__.py
+        cli.py
+        pipeline.py
+
+Templates are stored separately:
+
+    templates/
+        minimal/
+            template.html
 
 ------------------------------------------------------------------------
 
@@ -63,193 +70,94 @@ Output:
 
 Clone the repository:
 
-``` bash
-git clone https://github.com/natalnetwork/csv-pdf-reportgen.git
-cd csv-pdf-reportgen
-```
+    git clone https://github.com/natalnetwork/csv-pdf-reportgen.git
+    cd csv-pdf-reportgen
 
-Create virtual environment:
+Create a virtual environment:
 
-``` bash
-python -m venv .venv
-source .venv/bin/activate
-```
+    python -m venv .venv
+    source .venv/bin/activate
 
-Install the project:
+Install dependencies:
 
-``` bash
-pip install -e .
-```
+    pip install -r requirements.txt
 
 ------------------------------------------------------------------------
 
 # Usage
 
-Generic usage with default template:
+Basic command:
 
-``` bash
-reportgen data.csv --out out
-```
+    python -m reportgen input.csv output.pdf --template templates/minimal/template.html
 
-CSV with header row:
+Arguments:
 
-``` bash
-reportgen data.csv --out out --header yes
-```
-
-Custom template by path:
-
-``` bash
-reportgen data.csv --template templates/minimal/template.html --out out
-```
-
-Generated output:
-
-        out/data.pdf
-
-------------------------------------------------------------------------
-
-# Template How-To
-
-1. Create a folder under `templates/`.
-2. Add a `template.html` file using Jinja2.
-3. Use `columns` and `rows` in the template context.
-
-Minimal example:
-
-``` html
-<table>
-    <thead>
-        <tr>
-            {% for column in columns %}
-                <th>{{ column }}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in rows %}
-            <tr>
-                {% for column in columns %}
-                    <td>{{ row[column] }}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-```
-
-------------------------------------------------------------------------
-
-# Input CSV Format
-
-By default, the CLI assumes **no header** and generates column names `col1..colN`.
-If the first row is a header, pass `--header yes`.
-
-Example with header:
-
-``` csv
-name,amount,date
-Alice,19.90,2026-03-03
-Bob,5.00,2026-03-04
-```
-
-Example without header:
-
-``` csv
-Alice,19.90,2026-03-03
-Bob,5.00,2026-03-04
-```
-
-------------------------------------------------------------------------
-
-# Example Output
-
-Generated sample PDFs live in:
-
-- `examples/minimal.pdf`
-- `examples/csv-pdf-pipeline.pdf`
-
-------------------------------------------------------------------------
-
-# Project Structure
-
-    csv-pdf-reportgen
-    │
-    ├─ src/reportgen
-    │  ├─ pipeline.py
-    │  ├─ cli.py
-    │  └─ __main__.py
-    │
-    ├─ templates
-    │
-    ├─ examples
-    │
-    ├─ tests
-    │
-    ├─ docs
-    │
-    └─ pyproject.toml
-
-------------------------------------------------------------------------
-
-# Pipeline Architecture
-
-    load_csv
-       ↓
-    validate
-       ↓
-    transform
-       ↓
-    render_template
-       ↓
-    generate_pdf
+  Argument     Description
+  ------------ ----------------------
+  input.csv    Source CSV file
+  output.pdf   Target PDF file
+  --template   HTML/Jinja2 template
 
 ------------------------------------------------------------------------
 
 # Development
 
-Run linting:
-
-``` bash
-ruff check .
-```
-
-Format code:
-
-``` bash
-ruff format .
-```
-
 Run tests:
 
-``` bash
-pytest
-```
+    pytest
+
+Run linting:
+
+    ruff check .
+
+Format code if necessary:
+
+    ruff format .
 
 ------------------------------------------------------------------------
 
-# Future Improvements
+# Continuous Integration
 
-Possible future extensions:
+The repository uses **GitHub Actions** to automatically run:
 
--   schema validation for CSV input
--   configurable report themes
--   plugin system for report types
--   HTML preview mode
--   Docker container for batch reporting
+• tests (pytest)\
+• linting (ruff)
+
+on every push to ensure code quality.
+
+CI status should always remain **green on main**.
 
 ------------------------------------------------------------------------
 
 # Roadmap
 
-- Add schema-aware validation per template
-- Optional transform stage (dates/currency)
-- Template discovery via CLI
+Possible next steps:
+
+• CSV schema validation\
+• Multiple built‑in report templates\
+• Template configuration system\
+• Docker distribution\
+• Batch report generation\
+• Web UI
+
+------------------------------------------------------------------------
+
+# Why this project exists
+
+This repository was built as a **portfolio-quality backend engineering
+example** demonstrating:
+
+• Python architecture design\
+• clean repository structure\
+• CI/CD integration\
+• reproducible builds\
+• template-based document generation
+
+The project intentionally keeps the MVP small while focusing on **code
+quality and professional engineering practices**.
 
 ------------------------------------------------------------------------
 
 # License
 
 MIT License
-
-For demo/portfolio use.
